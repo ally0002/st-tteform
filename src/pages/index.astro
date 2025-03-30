@@ -1,15 +1,104 @@
 ---
 import MainLayout from "../layouts/MainLayout.astro";
-import Button from '../components/Button.astro';
-import Link from '../components/Link.astro';
-import { Image } from 'astro:assets';
+import Button from "../components/Button.astro";
+import Link from "../components/Link.astro";
+import { Image } from "astro:assets";
 import thumbsup from "../assets/images/thumbsup.png";
 ---
+
 <MainLayout title="Titel">
-	<article>
-		<h1>Index overskrift</h1>
-		<Button>Klik!</Button>
-		<p>Link til <Link href="https://www.kea.dk" target="_blank">En anden side</Link></p>
-		<Image src={thumbsup} alt=""></Image>
-	</article>
+  <article class="mx-auto max-w-2xl mt-20">
+    <h1>Støtteformular</h1>
+
+    <form>
+      <div class="mt-8">
+        <legend>Hvor ofte vil du støtte?</legend>
+
+        <input type="radio" name="periode" value="engangsbelob" id="engangs" />
+        <label for="engangs">Engangsbeløb</label>
+
+        <input type="radio" name="periode" value="maanedligtbelob" id="maanedligt" checked />
+        <label for="maanedligt" class="bg-slate-500">Månedligt beløb</label>
+      </div>
+
+      <div class="mt-8">
+        <legend>Hvor stort et beløb?</legend>
+
+        <input type="radio" name="belob" value="100" id="100" />
+        <label for="100">100</label>
+
+        <input type="radio" name="belob" value="200" id="200" checked />
+        <label for="200" class="bg-slate-500">200</label>
+
+        <input type="radio" name="belob" value="300" id="300" />
+        <label for="300">300</label>
+
+        <div>
+          <input type="number" name="belob" id="andetbelob" min="100" step="5" placeholder="indtast beløb" />
+        </div>
+      </div>
+    </form>
+
+    <h2 class="mt-20">Støtteformular med alpinejs</h2>
+    <form>
+      <div class="mt-8">
+        <div x-data="{ selected: 'maanedligtbelob' }">
+          <input type="radio" name="periode" value="engangsbelob" id="engangs" x-model="selected" />
+          <label for="engangs" x-bind:class="{ 'bg-slate-500': selected === 'engangsbelob' }">Engangsbeløb</label>
+          <input type="radio" name="periode" value="maanedligtbelob" id="maanedligt" x-model="selected" />
+          <label for="maanedligt" x-bind:class="{ 'bg-slate-500': selected === 'maanedligtbelob' }">Månedligt beløb</label>
+        </div>
+      </div>
+
+      <div class="mt-8">
+        <div x-data="{ selected: '200', customvalue: '' }">
+          <input type="radio" name="belob" value="100" id="100" x-model="selected" @click="customvalue = ''" />
+          <label for="engangs" x-bind:class="{ 'bg-slate-500': selected === '100' }">100</label>
+          <input type="radio" name="belob" value="200" id="200" x-model="selected" @click="customvalue = ''" />
+          <label for="engangs" x-bind:class="{ 'bg-slate-500': selected === '200' }">200</label>
+          <input type="radio" name="belob" value="300" id="300" x-model="selected" @click="customvalue = ''" />
+          <label for="maanedligt" x-bind:class="{ 'bg-slate-500': selected === '300' }">300</label>
+          <div>
+            <input type="number" name="belob" id="andetbelob" min="100" step="5" placeholder="indtast beløb" x-model="customvalue" @click="selected = 'andetbelob'" />
+          </div>
+        </div>
+      </div>
+    </form>
+  </article>
 </MainLayout>
+<script>
+  const periode = document.querySelectorAll('input[name="periode"]');
+  periode.forEach((radio) => {
+    radio.addEventListener("change", (e) => {
+      periode.forEach((radio) => {
+        if (radio.checked) {
+          radio.nextElementSibling.classList.add("bg-slate-500");
+        } else {
+          radio.nextElementSibling.classList.remove("bg-slate-500");
+        }
+      });
+    });
+  });
+
+  const belob = document.querySelectorAll('input[name="belob"]');
+  belob.forEach((radio) => {
+    radio.addEventListener("change", (e) => {
+      belob.forEach((radio) => {
+        if (radio.checked) {
+          radio.nextElementSibling.classList.add("bg-slate-500");
+          document.getElementById("andetbelob").value = "";
+        } else {
+          radio.nextElementSibling.classList.remove("bg-slate-500");
+        }
+      });
+    });
+  });
+
+  const andetbelob = document.querySelector("#andetbelob");
+  andetbelob.addEventListener("focus", (e) => {
+    belob.forEach((radio) => {
+      radio.checked = false;
+      radio.nextElementSibling.classList.remove("bg-slate-500");
+    });
+  });
+</script>
